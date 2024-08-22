@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 const connection = mysql.createPool({
     host: "localhost",
     user: "root",
-    password: "71945814",
+    password: "719458145",
     database: "music_db"
 });
 
@@ -31,21 +31,33 @@ app.get('/', (req, res) => {
 // })
 
 app.get("/albums", async (req, res) => {
-    try{
+    try {
         const [rows] = await connection.query("SELECT * FROM artist")
         res.json(rows)
-    }catch(error){
+    } catch (error) {
         res.status(500).send(error.message)
     }
 
 })
 
-app.get("/albums/:id", (req, res) => {
-    connection.query(`SELECT * FROM album where id=${req.params.id}`,
-        (error, results, fields) => {
-            res.json(results);
-        }
-    )
+app.get("/albums/:id", async (req, res) => {
+
+    try {
+        const [row] = await connection.query(`SELECT * FROM album where id=${req.params.id}`)
+        // const [row] = await connection.query("SELECT * FROM album where id=?" [req.params.id])
+        // connection.query(`SELECT * FROM album where id=${req.params.id}`,
+        //     (error, results, fields) => {
+        //         res.json(results);
+        //     }
+        // )
+        if (row.length > 0)
+            res.json(row[0])
+        else
+            res.status(404).send("Artist not found")
+    }
+    catch (error) {
+        res.status(500).send(error.message)
+    }
 })
 
 app.listen(port, () => {
