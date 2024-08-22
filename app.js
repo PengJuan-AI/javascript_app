@@ -71,6 +71,20 @@ app.post("/artists", async(req, res)=>{
     }
 })
 
+app.delete("/artists/:id", async (req, res)=>{
+    try{
+        const [result] = await connection.query(
+            "DELETE FROM artist WHERE id=?", [req.params.id]
+        )
+        if (result.affectedRows===0){
+            res.status(404).send(result)
+        }
+        res.status(200).send(result)
+        // console.log(result)
+    }catch(error){
+        res.status(500).send(error.message)
+    }
+})
 
 app.listen(port, () => {
     console.log("The server is running")
