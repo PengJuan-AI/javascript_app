@@ -86,12 +86,32 @@ app.delete("/artists/:id", async (req, res)=>{
     }
 })
 
+app.put("/artists/:id", async (req, res) => {
+    try{
+        const id = req.params.id;
+        const {name, country, numberOfMembers, style} = req.body;
+
+        const [result] = await connection.query(
+            "UPDATE artist SET name=?, country=?, numberOfMembers=?, style=? "+
+            "WHERE id=?",
+            [name, country, numberOfMembers, style, id]
+        )
+
+        if (result.affectedRows===0)
+            return res.status(404).json({message: "Artist not found", ...result})
+
+        res.json({id, name, country, numberOfMembers, style})
+
+    }catch(error){
+        res.status(500).send(error.message)
+    }
+})
 app.listen(port, () => {
     console.log("The server is running")
 })
 
 /*
-//
+// when use - import mysql from "mysql"
 app.get("/albums", (req, res) => {
     connection.query("SELECT * FROM album",
         (error,
